@@ -343,10 +343,57 @@
   footer span { color: var(--blue); }
 
   /* ── RESPONSIVE ── */
-  @media (max-width: 620px) {
-    .two-col, .projects-grid { grid-template-columns: 1fr; }
+  /* HAMBURGER */
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; padding: 4px; background: none; border: none;
+  }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--blue); border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 1rem; }
+    nav { position: sticky; }
+    .hamburger { display: flex; }
+    .nav-links {
+      display: none; flex-direction: column;
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: rgba(2,11,24,0.98);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem 1.2rem; gap: 1rem; z-index: 99;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { font-size: 0.85rem; }
+    .hero { padding: 2.5rem 0 1.8rem; }
+    .hero-name { font-size: clamp(1.6rem, 9vw, 2.2rem); }
+    .hero-role { font-size: 0.68rem; letter-spacing: 0.1em; }
+    .hero-tagline { font-size: 0.82rem; }
+    .btn { font-size: 0.74rem; padding: 9px 16px; }
+    .stats { gap: 8px; margin: 1.8rem 0; }
+    .stat-card { padding: 0.9rem 0.4rem; }
+    .stat-num { font-size: 1.35rem; }
+    .stat-label { font-size: 0.55rem; letter-spacing: 0.04em; }
+    .two-col { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
     .connect-grid { grid-template-columns: repeat(2,1fr); }
-    .stats { grid-template-columns: repeat(3,1fr); }
+    .sec-header { font-size: 0.63rem; }
+    .tag { font-size: 0.63rem; padding: 3px 9px; }
+    .about-item { font-size: 0.76rem; }
+    .proj-desc { font-size: 0.74rem; }
+    .quote-box { padding: 1.2rem 1rem; }
+    .quote-text { font-size: 0.88rem !important; }
+    footer { font-size: 0.62rem; padding: 1.2rem 1rem; }
+  }
+  @media (max-width: 380px) {
+    .stat-num { font-size: 1.1rem; }
+    .stat-label { font-size: 0.48rem; }
+    .hero-name { font-size: 1.4rem; }
   }
 </style>
 </head>
@@ -359,7 +406,10 @@
 <nav>
   <div class="nav-inner">
     <a href="#" class="nav-logo">AA_</a>
-    <ul class="nav-links">
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="#about" data-i18n="nav_about">About</a></li>
       <li><a href="#skills" data-i18n="nav_skills">Skills</a></li>
       <li><a href="#projects" data-i18n="nav_projects">Projects</a></li>
@@ -648,6 +698,20 @@
   };
 
   let currentLang = 'en';
+
+  function toggleMenu() {
+    const h = document.getElementById('hamburger');
+    const n = document.getElementById('navLinks');
+    h.classList.toggle('open');
+    n.classList.toggle('open');
+  }
+  // Close menu on link click
+  document.querySelectorAll('#navLinks a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
 
   function toggleLang() {
     currentLang = currentLang === 'en' ? 'az' : 'en';
