@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Avaz Azizov — AI & Data Science</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Fira+Code:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #020b18;
+    --bg2:       #040f22;
+    --bg3:       #071530;
+    --card:      rgba(4, 20, 55, 0.75);
+    --border:    rgba(0, 90, 200, 0.2);
+    --border2:   rgba(0, 120, 255, 0.4);
+    --blue:      #4a9eff;
+    --blue2:     #0066ff;
+    --blue3:     #003399;
+    --text:      #c9d4e8;
+    --muted:     #607090;
+    --green:     #4ade80;
+    --font-main: 'Fira Code', monospace;
+    --font-title:'Orbitron', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,140,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,140,255,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none;
+  }
+  .bg-glow {
+    position: fixed; top: -180px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 450px;
+    background: radial-gradient(ellipse, rgba(0,70,200,0.13) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: pulse 5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+  /* ── LAYOUT ── */
+  .wrap { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+    background: rgba(2,11,24,0.85);
+    border-bottom: 1px solid var(--border);
+    padding: 0.9rem 0;
+  }
+  .nav-inner {
+    max-width: 880px; margin: 0 auto; padding: 0 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-title);
+    font-size: 0.9rem; font-weight: 700;
+    color: var(--blue);
+    letter-spacing: 0.12em;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+  .lang-btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem; letter-spacing: 0.1em;
+    background: rgba(0,80,200,0.15);
+    border: 1px solid var(--border2);
+    color: var(--blue); border-radius: 6px;
+    padding: 4px 12px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn:hover { background: rgba(0,100,255,0.25); }
+  .nav-links a {
+    font-size: 0.75rem; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--blue); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 5rem 0 3.5rem;
+    animation: fadeDown 0.8s ease both;
+  }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-24px)} to{opacity:1;transform:translateY(0)} }
+
+  .badge-status {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--green);
+    background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.22);
+    border-radius: 30px; padding: 5px 16px;
+    margin-bottom: 1.6rem;
+  }
+  .badge-status::before {
+    content:''; width:7px; height:7px; border-radius:50%;
+    background: var(--green);
+    animation: pulse 1.4s infinite;
+  }
+
+  .hero-name {
+    font-family: var(--font-title);
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    font-weight: 900; letter-spacing: 0.05em;
+    line-height: 1.05; margin-bottom: 0.6rem;
+    background: linear-gradient(130deg, #fff 0%, #7eb8ff 45%, #0066ff 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-role {
+    font-size: 0.8rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--blue);
+    margin-bottom: 1.1rem;
+  }
+  .hero-tagline {
+    font-size: 0.95rem; color: var(--muted);
+    font-style: italic; margin-bottom: 2rem;
+  }
+  .cursor {
+    display: inline-block; width: 2px; height: 15px;
+    background: var(--blue); vertical-align: middle; margin-left: 2px;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 0.78rem; letter-spacing: 0.08em;
+    padding: 10px 24px; border-radius: 8px;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--blue2); color: #fff;
+    border: 1px solid var(--blue2);
+  }
+  .btn-primary:hover { background: #0077ff; transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: var(--blue);
+    border: 1px solid var(--border2);
+  }
+  .btn-outline:hover { background: rgba(0,100,255,0.1); transform: translateY(-2px); }
+
+  /* ── STATS ── */
+  .stats {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 14px; margin: 3rem 0;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.4rem 1rem;
+    text-align: center; position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .stat-card::after {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, transparent, var(--blue2), transparent);
+  }
+  .stat-num {
+    font-family: var(--font-title); font-size: 2rem; font-weight: 700;
+    color: var(--blue); display: block; margin-bottom: 5px;
+  }
+  .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* ── SECTION HEADER ── */
+  .sec-header {
+    font-family: var(--font-mono);
+    font-size: 0.72rem; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 0.18em;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.1rem;
+  }
+  .sec-header::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  /* ── SECTION ── */
+  section { margin-bottom: 2.5rem; animation: fadeUp 0.7s ease both; }
+
+  /* ── ABOUT + SKILLS GRID ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.4rem;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border2); }
+  .card::before {
+    content:''; position:absolute; left:0; top:0;
+    width:3px; height:100%;
+    background: linear-gradient(180deg, var(--blue2), var(--blue3));
+  }
+
+  .about-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(0,80,180,0.1);
+    font-size: 0.8rem; line-height: 1.55;
+  }
+  .about-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .about-icon { flex-shrink:0; margin-top:1px; font-size:15px; }
+  .about-key { color: var(--muted); font-size: 0.7rem; margin-bottom: 2px; }
+  .about-val { color: var(--text); }
+  .about-val.hl { color: var(--blue); }
+
+  /* skill tags */
+  .tag-group-label { font-size:0.68rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:7px; }
+  .tags { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+  .tag {
+    font-size: 0.7rem; padding: 4px 12px; border-radius: 6px;
+    border: 1px solid; font-family: var(--font-mono); letter-spacing: 0.05em;
+    transition: transform 0.15s;
+  }
+  .tag:hover { transform: scale(1.06); }
+  .tag-b { background:rgba(0,80,200,0.15); border-color:rgba(0,120,255,0.35); color:#6eaaff; }
+  .tag-c { background:rgba(0,160,200,0.12); border-color:rgba(0,180,220,0.3); color:#5dd5f0; }
+  .tag-p { background:rgba(100,60,200,0.15); border-color:rgba(130,80,255,0.3); color:#b48fff; }
+  .tag-g { background:rgba(40,160,80,0.12); border-color:rgba(60,200,100,0.25); color:#5de890; }
+
+  /* ── PROGRESS ── */
+  .progress-item { margin-bottom: 16px; }
+  .progress-item:last-child { margin-bottom: 0; }
+  .prog-row {
+    display:flex; justify-content:space-between;
+    font-size: 0.78rem; color: var(--text); margin-bottom: 6px;
+  }
+  .prog-pct { color: var(--blue); font-weight: 600; }
+  .prog-bg {
+    height: 7px; background: rgba(0,60,140,0.35);
+    border-radius: 10px; overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--blue3), var(--blue));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 1.2s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── PROJECTS ── */
+  .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .proj-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.2rem 1.3rem;
+    transition: border-color 0.2s, transform 0.2s;
+    text-decoration: none; display: block; color: inherit;
+  }
+  .proj-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .proj-name {
+    font-family: var(--font-mono); font-size: 0.85rem;
+    color: var(--blue); font-weight: 700; margin-bottom: 6px;
+  }
+  .proj-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.55; margin-bottom: 10px; }
+  .proj-lang {
+    font-size: 0.68rem; padding: 3px 10px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--muted); display: inline-block;
+  }
+
+  /* ── CONNECT ── */
+  .connect-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+  .conn-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 14px 8px;
+    background: rgba(0,40,100,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none; color: #8ab4d8;
+    font-size: 0.7rem; letter-spacing: 0.07em;
+    transition: all 0.2s;
+  }
+  .conn-btn:hover {
+    background: rgba(0,60,150,0.5);
+    border-color: var(--border2);
+    color: #c4dcf5; transform: translateY(-3px);
+  }
+  .conn-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    font-family: var(--font-mono);
+  }
+  .ci-li { background:rgba(0,120,210,0.3); color:#5ab4ff; }
+  .ci-kg { background:rgba(0,160,200,0.2); color:#5dd5f0; }
+  .ci-gh { background:rgba(150,150,200,0.2); color:#aab0cc; }
+  .ci-em { background:rgba(200,80,40,0.2); color:#ff8870; }
+
+  /* ── QUOTE ── */
+  .quote-box {
+    border: 1px solid var(--border2);
+    border-radius: 14px; padding: 1.8rem 2rem;
+    text-align: center; position: relative;
+    background: var(--card);
+    margin: 2rem 0;
+  }
+  .quote-box::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, #003399, #0088ff, #003399);
+    background-size: 200%; animation: shimmer 3s linear infinite;
+    border-radius: 14px 14px 0 0;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .quote-text {
+    font-size: 1rem; font-style: italic;
+    color: var(--text); margin-bottom: 0.6rem;
+  }
+  .quote-author { font-size: 0.75rem; color: var(--blue); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 2rem 0 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--muted);
+  }
+  footer span { color: var(--blue); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 620px) {
+    .two-col, .projects-grid { grid-template-columns: 1fr; }
+    .connect-grid { grid-template-columns: repeat(2,1fr); }
+    .stats { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">AA_</a>
+    <ul class="nav-links">
+      <li><a href="#about" data-i18n="nav_about">About</a></li>
+      <li><a href="#skills" data-i18n="nav_skills">Skills</a></li>
+      <li><a href="#projects" data-i18n="nav_projects">Projects</a></li>
+      <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+      <li><button class="lang-btn" id="langBtn" onclick="toggleLang()">AZ</button></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="badge-status" data-i18n="badge">Available for Collaboration</div>
+    <h1 class="hero-name">Avaz Azizov</h1>
+    <p class="hero-role" data-i18n="role">AI &amp; Data Science · Python Developer</p>
+    <p class="hero-tagline" data-i18n="tagline">Building intelligent solutions with data<span class="cursor"></span></p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="mailto:ezizovevez.ai@gmail.com" data-i18n="btn_contact">Contact Me</a>
+      <a class="btn btn-outline" href="https://github.com/avazazizov" target="_blank" data-i18n="btn_github">GitHub Profile</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <span class="stat-num" id="s1">—</span>
+      <span class="stat-label" data-i18n="stat_repos">Repositories</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" id="s2">—</span>
+      <span class="stat-label" data-i18n="stat_stars">Total Stars</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" id="s3">—</span>
+      <span class="stat-label" data-i18n="stat_followers">Followers</span>
+    </div>
+  </div>
+
+  <!-- ABOUT + SKILLS -->
+  <section id="about">
+    <div class="two-col">
+      <div>
+        <div class="sec-header">// about.py</div>
+        <div class="card">
+          <div class="about-item">
+            <span class="about-icon">🔭</span>
+            <div>
+              <div class="about-key" data-i18n="about_working_key">working on</div>
+              <div class="about-val" data-i18n="about_working_val">Applying ML models to real-world datasets</div>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="about-icon">🌱</span>
+            <div>
+              <div class="about-key" data-i18n="about_learning_key">learning</div>
+              <div class="about-val hl" data-i18n="about_learning_val">Deep Learning &amp; Neural Networks</div>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="about-icon">👯</span>
+            <div>
+              <div class="about-key" data-i18n="about_open_key">open to</div>
+              <div class="about-val" data-i18n="about_open_val">Data Science &amp; Analytics collab</div>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="about-icon">💬</span>
+            <div>
+              <div class="about-key" data-i18n="about_ask_key">ask me about</div>
+              <div class="about-val" data-i18n="about_ask_val">Python, ML &amp; Data Science</div>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="about-icon">📧</span>
+            <div>
+              <div class="about-key" data-i18n="about_email_key">email</div>
+              <div class="about-val hl" style="font-size:0.75rem;">ezizovevez.ai@gmail.com</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="skills">
+        <div class="sec-header">// skills.json</div>
+        <div class="card">
+          <div class="tag-group-label" data-i18n="skills_lang">Languages</div>
+          <div class="tags">
+            <span class="tag tag-b">Python</span>
+            <span class="tag tag-c">SQL</span>
+            <span class="tag tag-g">HTML5</span>
+            <span class="tag tag-p">CSS3</span>
+          </div>
+          <div class="tag-group-label" data-i18n="skills_ml">ML / Data</div>
+          <div class="tags">
+            <span class="tag tag-b">NumPy</span>
+            <span class="tag tag-c">Pandas</span>
+            <span class="tag tag-g">Matplotlib</span>
+            <span class="tag tag-p">Seaborn</span>
+            <span class="tag tag-b">Scikit-learn</span>
+          </div>
+          <div class="tag-group-label" data-i18n="skills_tools">Tools</div>
+          <div class="tags" style="margin-bottom:0;">
+            <span class="tag tag-g">Postman</span>
+            <span class="tag tag-b">Node.js</span>
+            <span class="tag tag-c">Oracle</span>
+            <span class="tag tag-p">VS Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TERMINAL CARD -->
+  <section>
+    <div class="sec-header">// terminal.sh</div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="background:rgba(0,10,30,0.9); padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border);">
+        <span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
+        <span style="width:11px;height:11px;border-radius:50%;background:#febc2e;display:inline-block;"></span>
+        <span style="width:11px;height:11px;border-radius:50%;background:#28c840;display:inline-block;"></span>
+        <span style="font-size:0.7rem;color:var(--muted);margin-left:8px;">avaz@portfolio ~ bash</span>
+      </div>
+      <div style="padding:1.2rem 1.5rem; font-size:0.82rem; line-height:2;">
+        <div><span style="color:#4ade80;">avaz@portfolio</span><span style="color:var(--muted)">:~$</span> <span style="color:var(--text)">whoami</span></div>
+        <div style="color:var(--blue); padding-left:1rem;">Avaz Azizov — AI &amp; Data Science Learner</div>
+        <div style="margin-top:4px;"><span style="color:#4ade80;">avaz@portfolio</span><span style="color:var(--muted)">:~$</span> <span style="color:var(--text)">cat goals.txt</span></div>
+        <div style="color:var(--muted); padding-left:1rem;" data-i18n="goal1">→ Build production-ready ML pipelines</div>
+        <div style="color:var(--muted); padding-left:1rem;" data-i18n="goal2">→ Master Deep Learning &amp; Computer Vision</div>
+        <div style="color:var(--muted); padding-left:1rem;" data-i18n="goal3">→ Contribute to open-source data projects</div>
+        <div style="margin-top:4px;"><span style="color:#4ade80;">avaz@portfolio</span><span style="color:var(--muted)">:~$</span> <span style="color:var(--text)">python --version</span></div>
+        <div style="color:var(--blue); padding-left:1rem;">Python 3.11.x — primary language</div>
+        <div style="margin-top:4px;"><span style="color:#4ade80;">avaz@portfolio</span><span style="color:var(--muted)">:~$</span> <span id="blink-cursor" style="color:var(--text);">_</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="sec-header">// projects.git</div>
+    <div class="projects-grid">
+      <a class="proj-card" href="https://github.com/avazazizov/Leaf-Disease-Detector" target="_blank">
+        <div class="proj-name">🌿 Leaf-Disease-Detector</div>
+        <div class="proj-desc" data-i18n="proj1_desc">Plant disease detection web app using MobileNetV2 Transfer Learning + FastAPI + HTML/CSS/JS</div>
+        <span class="proj-lang">Jupyter Notebook</span>
+      </a>
+      <a class="proj-card" href="https://github.com/avazazizov/Google-Play-Dataset-Analysis" target="_blank">
+        <div class="proj-name">📊 Google Play Analysis</div>
+        <div class="proj-desc" data-i18n="proj2_desc">Exploratory data analysis on Google Play Store dataset with visualizations and insights</div>
+        <span class="proj-lang">Jupyter Notebook</span>
+      </a>
+      <a class="proj-card" href="https://github.com/avazazizov/FitMe-Project" target="_blank">
+        <div class="proj-name">💪 FitMe Project</div>
+        <div class="proj-desc" data-i18n="proj3_desc">Fitness application project built with Dart</div>
+        <span class="proj-lang">Dart</span>
+      </a>
+      <a class="proj-card" href="https://github.com/avazazizov" target="_blank">
+        <div class="proj-name" data-i18n="proj4_name">🔗 More on GitHub</div>
+        <div class="proj-desc" data-i18n="proj4_desc">Check out all repositories and contributions on my GitHub profile</div>
+        <span class="proj-lang">github.com/avazazizov</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- CONNECT -->
+  <section id="contact">
+    <div class="sec-header">// connect.sh</div>
+    <div class="connect-grid">
+      <a class="conn-btn" href="https://linkedin.com/in/avaz-azizov" target="_blank">
+        <div class="conn-icon ci-li">in</div>LinkedIn
+      </a>
+      <a class="conn-btn" href="https://kaggle.com/avaz-azizov" target="_blank">
+        <div class="conn-icon ci-kg">K</div>Kaggle
+      </a>
+      <a class="conn-btn" href="https://github.com/avazazizov" target="_blank">
+        <div class="conn-icon ci-gh">GH</div>GitHub
+      </a>
+      <a class="conn-btn" href="mailto:ezizovevez.ai@gmail.com">
+        <div class="conn-icon ci-em">@</div>Email
+      </a>
+    </div>
+  </section>
+
+  <!-- TAGLINE BOX -->
+  <div class="quote-box">
+    <p class="quote-text" style="font-style:normal; font-size:1.1rem; letter-spacing:0.08em;" data-i18n="role">AI &amp; Data Science · Python Developer</p>
+    <p class="quote-author" style="margin-top:6px;">@avazazizov</p>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>avazazizov</span> · <span data-i18n="footer_role">AI &amp; Data Science</span> · Baku, Azerbaijan · 2025
+</footer>
+
+<script>
+  // GitHub API — real live stats
+  async function loadGitHubStats() {
+    try {
+      const [userRes, reposRes] = await Promise.all([
+        fetch('https://api.github.com/users/avazazizov'),
+        fetch('https://api.github.com/users/avazazizov/repos?per_page=100')
+      ]);
+      const user = await userRes.json();
+      const repos = await reposRes.json();
+
+      const totalStars = Array.isArray(repos)
+        ? repos.reduce((sum, r) => sum + r.stargazers_count, 0)
+        : 0;
+
+      animateCount(document.getElementById('s1'), user.public_repos || 0, 900);
+      animateCount(document.getElementById('s2'), totalStars, 900);
+      animateCount(document.getElementById('s3'), user.followers || 0, 900);
+    } catch(e) {
+      ['s1','s2','s3'].forEach(id => { document.getElementById(id).textContent = '?'; });
+    }
+  }
+
+  function animateCount(el, target, duration) {
+    let start = 0;
+    const step = Math.max(1, target / (duration / 16));
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { el.textContent = target; clearInterval(timer); return; }
+      el.textContent = Math.floor(start);
+    }, 16);
+  }
+
+  loadGitHubStats();
+
+  // Cursor blink in terminal
+  setInterval(() => {
+    const c = document.getElementById('blink-cursor');
+    if (c) c.style.opacity = c.style.opacity === '0' ? '1' : '0';
+  }, 530);
+
+  // ── TRANSLATIONS ──
+  const i18n = {
+    en: {
+      nav_about: 'About', nav_skills: 'Skills', nav_projects: 'Projects', nav_contact: 'Contact',
+      badge: 'Available for Collaboration',
+      role: 'AI & Data Science · Python Developer',
+      tagline: 'Building intelligent solutions with data',
+      btn_contact: 'Contact Me', btn_github: 'GitHub Profile',
+      stat_repos: 'Repositories', stat_stars: 'Total Stars', stat_followers: 'Followers',
+      about_working_key: 'working on', about_working_val: 'Applying ML models to real-world datasets',
+      about_learning_key: 'learning', about_learning_val: 'Deep Learning & Neural Networks',
+      about_open_key: 'open to', about_open_val: 'Data Science & Analytics collab',
+      about_ask_key: 'ask me about', about_ask_val: 'Python, ML & Data Science',
+      about_email_key: 'email',
+      skills_lang: 'Languages', skills_ml: 'ML / Data', skills_tools: 'Tools',
+      goal1: '→ Build production-ready ML pipelines',
+      goal2: '→ Master Deep Learning & Computer Vision',
+      goal3: '→ Contribute to open-source data projects',
+      proj1_desc: 'Plant disease detection web app using MobileNetV2 Transfer Learning + FastAPI + HTML/CSS/JS',
+      proj2_desc: 'Exploratory data analysis on Google Play Store dataset with visualizations and insights',
+      proj3_desc: 'Fitness application project built with Dart',
+      proj4_name: '🔗 More on GitHub', proj4_desc: 'Check out all repositories and contributions on my GitHub profile',
+      quote: '"Data is the new oil. Python is the drill."',
+      footer_role: 'AI & Data Science',
+    },
+    az: {
+      nav_about: 'Haqqımda', nav_skills: 'Bacarıqlar', nav_projects: 'Layihələr', nav_contact: 'Əlaqə',
+      badge: 'Əməkdaşlığa Açıqam',
+      role: 'AI və Data Elmi · Python Proqramçısı',
+      tagline: 'Data ilə ağıllı həllər qururum',
+      btn_contact: 'Əlaqə Saxla', btn_github: 'GitHub Profili',
+      stat_repos: 'Repozitoriyalar', stat_stars: 'Ümumi Ulduzlar', stat_followers: 'İzləyicilər',
+      about_working_key: 'üzərində çalışıram', about_working_val: 'ML modelləri real datasetlərə tətbiq edirəm',
+      about_learning_key: 'öyrənirəm', about_learning_val: 'Dərin Öyrənmə və Neyron Şəbəkələr',
+      about_open_key: 'açığam', about_open_val: 'Data Elmi və Analitika layihələrinə',
+      about_ask_key: 'soruşa bilərsən', about_ask_val: 'Python, ML və Data Elmi',
+      about_email_key: 'email',
+      skills_lang: 'Dillər', skills_ml: 'ML / Data', skills_tools: 'Alətlər',
+      goal1: '→ İstehsala hazır ML pipeline-lar qurmaq',
+      goal2: '→ Dərin Öyrənmə və Kompüter Görmə öyrənmək',
+      goal3: '→ Açıq kaynak data layihələrinə töhfə vermək',
+      proj1_desc: 'MobileNetV2 Transfer Öyrənmə + FastAPI + HTML/CSS/JS ilə bitki xəstəliyi aşkarlama tətbiqi',
+      proj2_desc: 'Google Play Store dataseti üzərində kəşfiyyat analizi, vizuallaşdırma və anlayışlar',
+      proj3_desc: 'Dart ilə hazırlanmış fitness tətbiqi layihəsi',
+      proj4_name: '🔗 GitHub-da Daha Çox', proj4_desc: 'Bütün repozitoriyaları və töhfələri GitHub profilində gör',
+      quote: '"Data yeni neftdir. Python isə qazıma alətidir."',
+      footer_role: 'AI və Data Elmi',
+    }
+  };
+
+  let currentLang = 'en';
+
+  function toggleLang() {
+    currentLang = currentLang === 'en' ? 'az' : 'en';
+    const btn = document.getElementById('langBtn');
+    btn.textContent = currentLang === 'en' ? 'AZ' : 'EN';
+    const t = i18n[currentLang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+  }
+</script>
+</body>
+</html>
