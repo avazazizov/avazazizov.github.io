@@ -342,6 +342,50 @@
   }
   footer span { color: var(--blue); }
 
+  /* ── REPO CARDS ── */
+  .repos-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .repo-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.2rem 1.3rem;
+    transition: border-color 0.2s, transform 0.2s;
+    text-decoration: none; display: flex; flex-direction: column;
+    gap: 8px; color: inherit;
+  }
+  .repo-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .repo-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .repo-name {
+    font-family: var(--font-mono); font-size: 0.82rem;
+    color: var(--blue); font-weight: 700; word-break: break-word;
+  }
+  .repo-stars {
+    font-size: 0.7rem; color: var(--muted); white-space: nowrap;
+    display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+  }
+  .repo-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.5; flex: 1; }
+  .repo-foot { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .repo-lang {
+    font-size: 0.67rem; padding: 3px 10px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--muted); display: inline-block;
+  }
+  .repo-updated { font-size: 0.65rem; color: var(--muted); margin-left: auto; }
+  .repos-loading {
+    text-align: center; color: var(--muted);
+    font-size: 0.8rem; padding: 2rem; grid-column: 1/-1;
+  }
+  .repos-loading::after {
+    content: ''; display: inline-block; width: 12px; height: 12px;
+    border: 2px solid var(--border2); border-top-color: var(--blue);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin-left: 8px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .lang-dot {
+    width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+  }
+
   /* ── RESPONSIVE ── */
   /* HAMBURGER */
   .hamburger {
@@ -381,6 +425,7 @@
     .stat-label { font-size: 0.55rem; letter-spacing: 0.04em; }
     .two-col { grid-template-columns: 1fr; }
     .projects-grid { grid-template-columns: 1fr; }
+    .repos-grid { grid-template-columns: 1fr; }
     .connect-grid { grid-template-columns: repeat(2,1fr); }
     .sec-header { font-size: 0.63rem; }
     .tag { font-size: 0.63rem; padding: 3px 9px; }
@@ -549,28 +594,14 @@
 
   <!-- PROJECTS -->
   <section id="projects">
-    <div class="sec-header">// projects.git</div>
-    <div class="projects-grid">
-      <a class="proj-card" href="https://github.com/avazazizov/Leaf-Disease-Detector" target="_blank">
-        <div class="proj-name">🌿 Leaf-Disease-Detector</div>
-        <div class="proj-desc" data-i18n="proj1_desc">Plant disease detection web app using MobileNetV2 Transfer Learning + FastAPI + HTML/CSS/JS</div>
-        <span class="proj-lang">Jupyter Notebook</span>
+    <div class="sec-header" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
+      <span>// projects.git</span>
+      <a href="https://github.com/avazazizov" target="_blank" style="font-size:0.68rem; color:var(--blue); text-decoration:none; letter-spacing:0.08em;">
+        View all on GitHub →
       </a>
-      <a class="proj-card" href="https://github.com/avazazizov/Google-Play-Dataset-Analysis" target="_blank">
-        <div class="proj-name">📊 Google Play Analysis</div>
-        <div class="proj-desc" data-i18n="proj2_desc">Exploratory data analysis on Google Play Store dataset with visualizations and insights</div>
-        <span class="proj-lang">Jupyter Notebook</span>
-      </a>
-      <a class="proj-card" href="https://github.com/avazazizov/FitMe-Project" target="_blank">
-        <div class="proj-name">💪 FitMe Project</div>
-        <div class="proj-desc" data-i18n="proj3_desc">Fitness application project built with Dart</div>
-        <span class="proj-lang">Dart</span>
-      </a>
-      <a class="proj-card" href="https://github.com/avazazizov" target="_blank">
-        <div class="proj-name" data-i18n="proj4_name">🔗 More on GitHub</div>
-        <div class="proj-desc" data-i18n="proj4_desc">Check out all repositories and contributions on my GitHub profile</div>
-        <span class="proj-lang">github.com/avazazizov</span>
-      </a>
+    </div>
+    <div class="repos-grid" id="reposGrid">
+      <div class="repos-loading">Loading repositories from GitHub</div>
     </div>
   </section>
 
@@ -640,6 +671,65 @@
   }
 
   loadGitHubStats();
+
+  // Language colors map
+  const langColors = {
+    'Python': '#3572A5', 'JavaScript': '#f1e05a', 'TypeScript': '#2b7489',
+    'HTML': '#e34c26', 'CSS': '#563d7c', 'Dart': '#00B4AB',
+    'Jupyter Notebook': '#DA5B0B', 'Shell': '#89e051', 'Java': '#b07219',
+    'C++': '#f34b7d', 'C': '#555555', 'Go': '#00ADD8', 'Rust': '#dea584',
+  };
+
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr);
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return 'today';
+    if (days === 1) return '1 day ago';
+    if (days < 30) return days + ' days ago';
+    if (days < 365) return Math.floor(days/30) + ' mo ago';
+    return Math.floor(days/365) + ' yr ago';
+  }
+
+  async function loadRepos() {
+    const grid = document.getElementById('reposGrid');
+    try {
+      const res = await fetch('https://api.github.com/users/avazazizov/repos?per_page=100&sort=updated');
+      const repos = await res.json();
+      if (!Array.isArray(repos) || repos.length === 0) {
+        grid.innerHTML = '<div class="repos-loading" style="animation:none;">No repositories found.</div>';
+        return;
+      }
+      // Filter out forked, sort by updated
+      const filtered = repos
+        .filter(r => !r.fork)
+        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+      grid.innerHTML = filtered.map(r => {
+        const lang = r.language || '';
+        const color = langColors[lang] || '#607090';
+        const dot = lang ? `<span class="lang-dot" style="background:${color}"></span>` : '';
+        const desc = r.description ? r.description : '<span style="opacity:0.4; font-style:italic;">No description</span>';
+        const stars = r.stargazers_count > 0
+          ? `<span class="repo-stars">★ ${r.stargazers_count}</span>` : '';
+        return `
+        <a class="repo-card" href="${r.html_url}" target="_blank">
+          <div class="repo-top">
+            <div class="repo-name">📁 ${r.name}</div>
+            ${stars}
+          </div>
+          <div class="repo-desc">${desc}</div>
+          <div class="repo-foot">
+            ${dot}<span class="repo-lang">${lang || 'Unknown'}</span>
+            <span class="repo-updated">${timeAgo(r.updated_at)}</span>
+          </div>
+        </a>`;
+      }).join('');
+    } catch(e) {
+      grid.innerHTML = '<div class="repos-loading" style="animation:none; color:#ff6b6b;">Could not load repositories.</div>';
+    }
+  }
+
+  loadRepos();
 
   // Cursor blink in terminal
   setInterval(() => {
