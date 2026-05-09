@@ -29,6 +29,49 @@
 
   html { scroll-behavior: smooth; }
 
+  /* Scroll progress bar */
+  .scroll-bar {
+    position: fixed; top: 0; left: 0;
+    height: 2px; width: 0%;
+    background: linear-gradient(90deg, #003399, #0066ff, #4a9eff);
+    z-index: 9999;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(74,158,255,0.6);
+  }
+
+  /* Back to top */
+  .back-top {
+    position: fixed; bottom: 2rem; right: 1.5rem;
+    width: 40px; height: 40px;
+    background: rgba(0,40,100,0.8);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 500;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s;
+    backdrop-filter: blur(8px);
+    color: var(--blue); font-size: 16px;
+    text-decoration: none;
+  }
+  .back-top.visible { opacity: 1; transform: translateY(0); }
+  .back-top:hover { background: rgba(0,60,150,0.9); border-color: var(--blue); transform: translateY(-2px); }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Card tilt glow on hover */
+  .stat-card, .card, .repo-card, .conn-btn, .proj-card {
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .stat-card:hover, .card:hover, .repo-card:hover {
+    box-shadow: 0 0 24px rgba(0, 80, 255, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+  }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -444,6 +487,10 @@
 </head>
 <body>
 
+<div class="scroll-bar" id="scrollBar"></div>
+<a class="back-top" id="backTop" href="#">↑</a>
+
+<canvas id="particles" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
 
@@ -479,7 +526,7 @@
   </div>
 
   <!-- STATS -->
-  <div class="stats">
+  <div class="stats reveal">
     <div class="stat-card">
       <span class="stat-num" id="s1">—</span>
       <span class="stat-label" data-i18n="stat_repos">Repositories</span>
@@ -495,7 +542,7 @@
   </div>
 
   <!-- ABOUT + SKILLS -->
-  <section id="about">
+  <section id="about" class="reveal">
     <div class="two-col">
       <div>
         <div class="sec-header">// about.py</div>
@@ -569,7 +616,7 @@
   </section>
 
   <!-- TERMINAL CARD -->
-  <section>
+  <section class="reveal">
     <div class="sec-header">// terminal.sh</div>
     <div class="card" style="padding:0; overflow:hidden;">
       <div style="background:rgba(0,10,30,0.9); padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border);">
@@ -593,7 +640,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section id="projects">
+  <section id="projects" class="reveal">
     <div class="sec-header" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
       <span>// projects.git</span>
       <a href="https://github.com/avazazizov" target="_blank" style="font-size:0.68rem; color:var(--blue); text-decoration:none; letter-spacing:0.08em;">
@@ -606,7 +653,7 @@
   </section>
 
   <!-- CONNECT -->
-  <section id="contact">
+  <section id="contact" class="reveal">
     <div class="sec-header">// connect.sh</div>
     <div class="connect-grid">
       <a class="conn-btn" href="https://www.linkedin.com/in/avaz-azizov-b1a0993a3/" target="_blank">
@@ -625,7 +672,7 @@
   </section>
 
   <!-- TAGLINE BOX -->
-  <div class="quote-box">
+  <div class="quote-box reveal">
     <p class="quote-text" style="font-style:normal; font-size:1.1rem; letter-spacing:0.08em;" data-i18n="role">AI &amp; Data Science · Python Developer</p>
     <p class="quote-author" style="margin-top:6px;">@avazazizov</p>
   </div>
@@ -733,6 +780,84 @@
 
   loadRepos();
 
+  // ── PARTICLE EFFECT ──
+  (function() {
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    const COUNT = 90;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    function createParticle() {
+      return {
+        x: rand(0, W), y: rand(0, H),
+        vx: rand(-0.18, 0.18), vy: rand(-0.18, 0.18),
+        r: rand(1, 2.2),
+        alpha: rand(0.15, 0.55),
+        pulse: rand(0, Math.PI * 2),
+        pulseSpeed: rand(0.008, 0.022),
+      };
+    }
+
+    for (let i = 0; i < COUNT; i++) particles.push(createParticle());
+
+    // Connection distance
+    const CONNECT = 120;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Update & draw particles
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        p.pulse += p.pulseSpeed;
+        const a = p.alpha + Math.sin(p.pulse) * 0.12;
+
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(74,158,255,${a})`;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(0,100,255,0.4)';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Draw connections
+      for (let i = 0; i < COUNT; i++) {
+        for (let j = i + 1; j < COUNT; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < CONNECT) {
+            const alpha = (1 - dist / CONNECT) * 0.12;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(0,100,255,${alpha})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
   // Cursor blink in terminal
   setInterval(() => {
     const c = document.getElementById('blink-cursor');
@@ -804,6 +929,31 @@
       document.getElementById('navLinks').classList.remove('open');
     });
   });
+
+  // Scroll progress bar
+  const bar = document.getElementById('scrollBar');
+  const backTop = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    if (bar) bar.style.width = (scrolled / total * 100) + '%';
+    if (backTop) {
+      if (scrolled > 400) backTop.classList.add('visible');
+      else backTop.classList.remove('visible');
+    }
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => revealObs.observe(r));
 
   function toggleLang() {
     currentLang = currentLang === 'en' ? 'az' : 'en';
