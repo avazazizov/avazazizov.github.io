@@ -700,8 +700,9 @@
         return;
       }
       // Filter out forked, sort by updated
+      const HIDDEN = ['avazazizov.github.io', 'avazazizov'];
       const filtered = repos
-        .filter(r => !r.fork)
+        .filter(r => !r.fork && !HIDDEN.includes(r.name))
         .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
       grid.innerHTML = filtered.map(r => {
