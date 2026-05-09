@@ -57,7 +57,12 @@
   .back-top.visible { opacity: 1; transform: translateY(0); }
   .back-top:hover { background: rgba(0,60,150,0.9); border-color: var(--blue); transform: translateY(-2px); }
 
-  /* Scroll reveal — upgraded below in card section */
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
 
   /* Card tilt glow on hover */
   .stat-card, .card, .repo-card, .conn-btn, .proj-card {
@@ -366,131 +371,6 @@
     border-radius: 14px 14px 0 0;
   }
   @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-  /* ── CARD BORDER GLOW ORBIT ── */
-  .repo-card {
-    position: relative;
-    overflow: hidden;
-  }
-  .repo-card::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 16px;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--angle, 0deg),
-      transparent 0deg,
-      transparent 60deg,
-      rgba(74,158,255,0.9) 90deg,
-      rgba(0,180,255,1) 120deg,
-      rgba(74,158,255,0.9) 150deg,
-      transparent 180deg,
-      transparent 360deg
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    animation: orbitAngle 3s linear infinite;
-    animation-play-state: paused;
-  }
-  .repo-card:hover::before {
-    opacity: 1;
-    animation-play-state: running;
-  }
-
-  @property --angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-  @keyframes orbitAngle {
-    0%   { --angle: 0deg; }
-    100% { --angle: 360deg; }
-  }
-
-  /* Stat cards orbit glow too */
-  .stat-card {
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 14px;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--angle2, 0deg),
-      transparent 0deg,
-      transparent 70deg,
-      rgba(0,150,255,0.8) 100deg,
-      rgba(74,158,255,1) 130deg,
-      rgba(0,150,255,0.8) 160deg,
-      transparent 200deg,
-      transparent 360deg
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    animation: orbitAngle2 2.5s linear infinite;
-    animation-play-state: paused;
-  }
-  .stat-card:hover::before {
-    opacity: 1;
-    animation-play-state: running;
-  }
-  @property --angle2 {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-  @keyframes orbitAngle2 {
-    0%   { --angle2: 0deg; }
-    100% { --angle2: 360deg; }
-  }
-
-  /* ── SCROLL REVEAL UPGRADE ── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .reveal-left {
-    opacity: 0;
-    transform: translateX(-30px);
-    transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-  }
-  .reveal-left.visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .reveal-right {
-    opacity: 0;
-    transform: translateX(30px);
-    transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-  }
-  .reveal-right.visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .reveal-scale {
-    opacity: 0;
-    transform: scale(0.92);
-    transition: opacity 0.6s cubic-bezier(.4,0,.2,1), transform 0.6s cubic-bezier(.4,0,.2,1);
-  }
-  .reveal-scale.visible {
-    opacity: 1;
-    transform: scale(1);
-  }
   .quote-text {
     font-size: 1rem; font-style: italic;
     color: var(--text); margin-bottom: 0.6rem;
@@ -646,7 +526,7 @@
   </div>
 
   <!-- STATS -->
-  <div class="stats reveal-scale">
+  <div class="stats reveal">
     <div class="stat-card">
       <span class="stat-num" id="s1">—</span>
       <span class="stat-label" data-i18n="stat_repos">Repositories</span>
@@ -736,7 +616,7 @@
   </section>
 
   <!-- TERMINAL CARD -->
-  <section class="reveal-left">
+  <section class="reveal">
     <div class="sec-header">// terminal.sh</div>
     <div class="card" style="padding:0; overflow:hidden;">
       <div style="background:rgba(0,10,30,0.9); padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border);">
@@ -792,7 +672,7 @@
   </section>
 
   <!-- TAGLINE BOX -->
-  <div class="quote-box reveal-scale">
+  <div class="quote-box reveal">
     <p class="quote-text" style="font-style:normal; font-size:1.1rem; letter-spacing:0.08em;" data-i18n="role">AI &amp; Data Science · Python Developer</p>
     <p class="quote-author" style="margin-top:6px;">@avazazizov</p>
   </div>
@@ -1063,19 +943,17 @@
     }
   });
 
-  // Scroll reveal — all types
-  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
   const revealObs = new IntersectionObserver(entries => {
-    entries.forEach((e, i) => {
+    entries.forEach(e => {
       if (e.isIntersecting) {
-        setTimeout(() => {
-          e.target.classList.add('visible');
-        }, 80);
+        e.target.classList.add('visible');
         revealObs.unobserve(e.target);
       }
     });
-  }, { threshold: 0.08 });
-  revealEls.forEach(r => revealObs.observe(r));
+  }, { threshold: 0.1 });
+  reveals.forEach(r => revealObs.observe(r));
 
   function toggleLang() {
     currentLang = currentLang === 'en' ? 'az' : 'en';
